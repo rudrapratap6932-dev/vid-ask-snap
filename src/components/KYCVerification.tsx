@@ -160,38 +160,38 @@ export default function KYCVerification() {
 
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-2xl w-full p-8 text-center space-y-6">
+      <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4">
+        <Card className="max-w-2xl w-full p-4 sm:p-6 md:p-8 text-center space-y-4 sm:space-y-6">
           <div className="flex justify-center">
-            <div className="rounded-full bg-primary/10 p-6">
-              <CheckCircle2 className="h-16 w-16 text-primary" />
+            <div className="rounded-full bg-primary/10 p-4 sm:p-6">
+              <CheckCircle2 className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 text-primary" />
             </div>
           </div>
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold text-foreground">Verification Complete!</h2>
-            <p className="text-muted-foreground text-lg">
+          <div className="space-y-1 sm:space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Verification Complete!</h2>
+            <p className="text-muted-foreground text-base sm:text-lg px-2">
               Your KYC verification has been successfully recorded.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-4 pt-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-2 sm:pt-4">
             <div className="space-y-1">
-              <p className="text-3xl font-bold text-primary">{KYC_QUESTIONS.length}</p>
-              <p className="text-sm text-muted-foreground">Questions Answered</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{KYC_QUESTIONS.length}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Questions Answered</p>
             </div>
             <div className="space-y-1">
-              <p className="text-3xl font-bold text-accent">{snapshots.length + 1}</p>
-              <p className="text-sm text-muted-foreground">Snapshots Captured</p>
+              <p className="text-2xl sm:text-3xl font-bold text-accent">{snapshots.length + 1}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Snapshots Captured</p>
             </div>
             <div className="space-y-1">
-              <p className="text-3xl font-bold text-secondary-foreground">1</p>
-              <p className="text-sm text-muted-foreground">Video Recorded</p>
+              <p className="text-2xl sm:text-3xl font-bold text-secondary-foreground">1</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Video Recorded</p>
             </div>
           </div>
-          <div className="pt-4">
+          <div className="pt-2 sm:pt-4">
             <Button 
               onClick={() => window.location.reload()} 
               variant="outline"
-              className="w-full"
+              className="w-full h-10 sm:h-11 text-sm sm:text-base"
             >
               Start New Verification
             </Button>
@@ -203,49 +203,49 @@ export default function KYCVerification() {
 
   if (!isStarted) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="max-w-2xl w-full p-8 space-y-6">
-          <div className="text-center space-y-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4">
+        <Card className="max-w-2xl w-full p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+          <div className="text-center space-y-3 sm:space-y-4">
             <div className="flex justify-center">
-              <div className="rounded-full bg-trust-gradient p-6">
-                <Camera className="h-12 w-12 text-primary-foreground" />
+              <div className="rounded-full bg-trust-gradient p-4 sm:p-6">
+                <Camera className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-primary-foreground" />
               </div>
             </div>
-            <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-foreground">KYC Verification</h1>
-              <p className="text-muted-foreground text-lg">
+            <div className="space-y-1 sm:space-y-2">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">KYC Verification</h1>
+              <p className="text-muted-foreground text-base sm:text-lg">
                 Complete your identity verification in minutes
               </p>
             </div>
           </div>
 
-          <div className="space-y-4 border-t border-border pt-6">
-            <h3 className="font-semibold text-foreground">What you'll need:</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                <span className="text-muted-foreground">A device with camera and microphone</span>
+          <div className="space-y-3 sm:space-y-4 border-t border-border pt-4 sm:pt-6">
+            <h3 className="font-semibold text-foreground text-sm sm:text-base">What you'll need:</h3>
+            <ul className="space-y-2 sm:space-y-3">
+              <li className="flex items-start gap-2 sm:gap-3">
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                <span className="text-muted-foreground text-sm sm:text-base">A device with camera and microphone</span>
               </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                <span className="text-muted-foreground">A quiet, well-lit environment</span>
+              <li className="flex items-start gap-2 sm:gap-3">
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                <span className="text-muted-foreground text-sm sm:text-base">A quiet, well-lit environment</span>
               </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                <span className="text-muted-foreground">5 minutes to answer verification questions</span>
+              <li className="flex items-start gap-2 sm:gap-3">
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                <span className="text-muted-foreground text-sm sm:text-base">5 minutes to answer verification questions</span>
               </li>
             </ul>
           </div>
 
-          <div className="space-y-3 pt-4">
+          <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4">
             <Button 
               onClick={startCamera} 
-              className="w-full bg-trust-gradient hover:opacity-90 text-primary-foreground text-lg h-14"
+              className="w-full bg-trust-gradient hover:opacity-90 text-primary-foreground text-base sm:text-lg h-12 sm:h-14"
             >
-              <Camera className="mr-2 h-5 w-5" />
+              <Camera className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Start Verification
             </Button>
-            <p className="text-xs text-center text-muted-foreground">
+            <p className="text-xs text-center text-muted-foreground px-2">
               By continuing, you agree to be recorded for verification purposes
             </p>
           </div>
@@ -255,23 +255,23 @@ export default function KYCVerification() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-6xl mx-auto space-y-6 py-8">
+    <div className="min-h-screen bg-background p-3 sm:p-4">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 py-4 sm:py-6 md:py-8">
         {/* Header with Progress */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-foreground">Identity Verification</h2>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="font-medium text-primary">
-                Question {currentQuestionIndex + 1} of {KYC_QUESTIONS.length}
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Identity Verification</h2>
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+              <span className="font-medium text-primary whitespace-nowrap">
+                {currentQuestionIndex + 1}/{KYC_QUESTIONS.length}
               </span>
             </div>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-1.5 sm:h-2" />
         </div>
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           {/* Video Feed */}
           <div className="lg:col-span-2">
             <Card className="overflow-hidden relative">
@@ -287,9 +287,9 @@ export default function KYCVerification() {
                   style={{ transform: 'scaleX(-1)' }}
                 />
                 {isRecording && (
-                  <div className="absolute top-4 right-4 flex items-center gap-2 bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-full shadow-recording animate-pulse">
-                    <Circle className="h-3 w-3 fill-current" />
-                    <span className="text-sm font-medium">Recording</span>
+                  <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex items-center gap-1.5 sm:gap-2 bg-destructive/90 text-destructive-foreground px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-recording animate-pulse">
+                    <Circle className="h-2 w-2 sm:h-3 sm:w-3 fill-current" />
+                    <span className="text-xs sm:text-sm font-medium">Recording</span>
                   </div>
                 )}
               </div>
@@ -298,35 +298,35 @@ export default function KYCVerification() {
           </div>
 
           {/* Question Panel */}
-          <div className="space-y-6">
-            <Card className="p-6 space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="rounded-full bg-primary/10 p-2 flex-shrink-0">
-                    <AlertCircle className="h-5 w-5 text-primary" />
+          <div className="space-y-3 sm:space-y-4 md:space-y-6">
+            <Card className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5 md:space-y-6">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="rounded-full bg-primary/10 p-1.5 sm:p-2 flex-shrink-0">
+                    <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                   </div>
-                  <div className="space-y-2 flex-1">
-                    <h3 className="font-semibold text-foreground">Current Question</h3>
-                    <p className="text-lg text-foreground leading-relaxed">
+                  <div className="space-y-1 sm:space-y-2 flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground text-sm sm:text-base">Current Question</h3>
+                    <p className="text-base sm:text-lg text-foreground leading-relaxed">
                       {currentQuestion.text}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {!isRecording ? (
                   <Button
                     onClick={startRecording}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10 sm:h-11 text-sm sm:text-base"
                   >
-                    <Circle className="mr-2 h-4 w-4" />
+                    <Circle className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                     Start Recording Answer
                   </Button>
                 ) : (
                   <Button
                     onClick={handleNextQuestion}
-                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-10 sm:h-11 text-sm sm:text-base"
                   >
                     {currentQuestionIndex < KYC_QUESTIONS.length - 1 ? (
                       <>Next Question</>
@@ -338,26 +338,26 @@ export default function KYCVerification() {
               </div>
 
               {isRecording && (
-                <div className="text-sm text-muted-foreground text-center animate-pulse">
+                <div className="text-xs sm:text-sm text-muted-foreground text-center animate-pulse">
                   Speak clearly into your microphone
                 </div>
               )}
             </Card>
 
             {/* Progress Indicators */}
-            <Card className="p-4">
-              <h4 className="text-sm font-medium text-foreground mb-3">Questions Progress</h4>
-              <div className="space-y-2">
+            <Card className="p-3 sm:p-4">
+              <h4 className="text-xs sm:text-sm font-medium text-foreground mb-2 sm:mb-3">Questions Progress</h4>
+              <div className="space-y-1.5 sm:space-y-2">
                 {KYC_QUESTIONS.map((q, idx) => (
-                  <div key={q.id} className="flex items-center gap-2">
+                  <div key={q.id} className="flex items-center gap-1.5 sm:gap-2">
                     {idx < currentQuestionIndex ? (
-                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                     ) : idx === currentQuestionIndex ? (
-                      <Circle className="h-4 w-4 text-accent flex-shrink-0 fill-current" />
+                      <Circle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent flex-shrink-0 fill-current" />
                     ) : (
-                      <Circle className="h-4 w-4 text-muted-foreground/30 flex-shrink-0" />
+                      <Circle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground/30 flex-shrink-0" />
                     )}
-                    <span className={`text-sm ${
+                    <span className={`text-xs sm:text-sm ${
                       idx <= currentQuestionIndex 
                         ? 'text-foreground font-medium' 
                         : 'text-muted-foreground'
@@ -372,9 +372,9 @@ export default function KYCVerification() {
         </div>
 
         {/* Debug Info */}
-        <Card className="p-4 bg-muted/50">
+        <Card className="p-3 sm:p-4 bg-muted/50">
           <details className="cursor-pointer">
-            <summary className="text-sm font-medium text-foreground mb-2">
+            <summary className="text-xs sm:text-sm font-medium text-foreground mb-2">
               Developer Console (Click to expand)
             </summary>
             <div className="text-xs text-muted-foreground space-y-1 font-mono">
