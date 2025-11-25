@@ -54,6 +54,10 @@ export default function KYCVerification() {
       
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        // Ensure video plays after stream is set
+        await videoRef.current.play().catch(err => {
+          console.error('Error playing video:', err);
+        });
       }
 
       const recorder = new MediaRecorder(mediaStream, {
@@ -279,8 +283,8 @@ export default function KYCVerification() {
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  muted
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover mirror"
+                  style={{ transform: 'scaleX(-1)' }}
                 />
                 {isRecording && (
                   <div className="absolute top-4 right-4 flex items-center gap-2 bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-full shadow-recording animate-pulse">
