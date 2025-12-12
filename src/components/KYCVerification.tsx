@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Camera, Circle, CheckCircle2, AlertCircle, Image, Clock } from 'lucide-react';
+import { Camera, Circle, CheckCircle2, AlertCircle, Image, Clock, Download, Play, FolderOpen, X, Video, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Question {
@@ -52,6 +52,10 @@ export default function KYCVerification() {
   const [showCountdown, setShowCountdown] = useState(false);
   const [countdownValue, setCountdownValue] = useState(5);
 
+  // Gallery states
+  const [showGallery, setShowGallery] = useState(false);
+  const [previewItem, setPreviewItem] = useState<{ type: 'video' | 'image'; url: string; title: string } | null>(null);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const currentChunksRef = useRef<Blob[]>([]);
@@ -91,6 +95,36 @@ export default function KYCVerification() {
       second: '2-digit',
       hour12: true 
     });
+  };
+
+  const downloadVideoClip = (clip: QuestionClip) => {
+    const a = document.createElement('a');
+    a.href = clip.videoUrl;
+    a.download = `question_${clip.questionId}_clip.webm`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast.success(`Downloaded clip for Question ${clip.questionId}`);
+  };
+
+  const downloadSnapshot = (snapshot: SnapshotData) => {
+    const a = document.createElement('a');
+    a.href = snapshot.imageData;
+    a.download = `question_${snapshot.questionId}_snapshot.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast.success(`Downloaded snapshot for Question ${snapshot.questionId}`);
+  };
+
+  const downloadAllFiles = () => {
+    questionClips.forEach((clip, idx) => {
+      setTimeout(() => downloadVideoClip(clip), idx * 500);
+    });
+    snapshots.forEach((snap, idx) => {
+      setTimeout(() => downloadSnapshot(snap), (questionClips.length + idx) * 500);
+    });
+    toast.success('Downloading all files...');
   };
 
   const startCamera = async () => {
@@ -578,6 +612,129 @@ export default function KYCVerification() {
             </Card>
           </div>
         </div>
+
+        {/* File Gallery Button */}
+        {(questionClips.length > 0 || snapshots.length > 0) && (
+          <Button
+            onClick={() => setShowGallery(true)}
+            variant="outline"
+            className="w-full h-10 sm:h-11 text-sm sm:text-base"
+          >
+            <FolderOpen className="mr-2 h-4 w-4" />
+            View Uploads ({questionClips.length} clips, {snapshots.length} snapshots)
+          </Button>
+        )}
+
+        {/* File Gallery Modal */}
+        {showGallery && (
+          <div className="fixed inset-0 bg-background/95 z-50 overflow-auto">
+            <div className="max-w-6xl mx-auto p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
+                  <FolderOpen className="h-6 w-6" />
+                  Uploads Folder
+                </h2>
+                <div className="flex items-center gap-2">
+                  {(questionClips.length > 0 || snapshots.length > 0) && (
+                    <Button onClick={downloadAllFiles} variant="outline" size="sm">
+                      <Download className="mr-2 h-4 w-4" />
+                      Download All
+                    </Button>
+                  )}
+                  <Button onClick={() => setShowGallery(false)} variant="ghost" size="icon">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Video Clips Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Video className="h-5 w-5 text-primary" />
+                  Video Clips ({questionClips.length})
+                </h3>
+                {questionClips.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">No video clips recorded yet</p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {questionClips.map((clip) => (
+                      <Card key={clip.questionId} className="overflow-hidden">
+                        <div className="aspect-video bg-muted relative group cursor-pointer"
+                             onClick={() => setPreviewItem({ type: 'video', url: clip.videoUrl, title: `Question ${clip.questionId} Clip` })}>
+                          <video src={clip.videoUrl} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-background/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Play className="h-12 w-12 text-primary" />
+                          </div>
+                        </div>
+                        <div className="p-3 space-y-2">
+                          <p className="font-medium text-foreground text-sm">Question {clip.questionId}</p>
+                          <p className="text-xs text-muted-foreground truncate">{clip.questionText}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">{(clip.videoBlob.size / 1024).toFixed(1)} KB</span>
+                            <Button onClick={(e) => { e.stopPropagation(); downloadVideoClip(clip); }} size="sm" variant="ghost">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Snapshots Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <ImageIcon className="h-5 w-5 text-accent" />
+                  Snapshots ({snapshots.length})
+                </h3>
+                {snapshots.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">No snapshots captured yet</p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {snapshots.map((snap) => (
+                      <Card key={`${snap.questionId}-${snap.timestamp.getTime()}`} className="overflow-hidden">
+                        <div className="aspect-square bg-muted relative group cursor-pointer"
+                             onClick={() => setPreviewItem({ type: 'image', url: snap.imageData, title: `Question ${snap.questionId} Snapshot` })}>
+                          <img src={snap.imageData} alt={`Snapshot Q${snap.questionId}`} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-background/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ImageIcon className="h-10 w-10 text-accent" />
+                          </div>
+                        </div>
+                        <div className="p-2 space-y-1">
+                          <p className="font-medium text-foreground text-xs">Q{snap.questionId}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">{snap.timestamp.toLocaleTimeString()}</span>
+                            <Button onClick={(e) => { e.stopPropagation(); downloadSnapshot(snap); }} size="sm" variant="ghost" className="h-7 w-7 p-0">
+                              <Download className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Preview Modal */}
+        {previewItem && (
+          <div className="fixed inset-0 bg-background/95 z-[60] flex items-center justify-center p-4" onClick={() => setPreviewItem(null)}>
+            <div className="max-w-4xl w-full max-h-[90vh] relative" onClick={(e) => e.stopPropagation()}>
+              <Button onClick={() => setPreviewItem(null)} variant="ghost" size="icon" className="absolute -top-12 right-0 text-foreground">
+                <X className="h-6 w-6" />
+              </Button>
+              <h3 className="text-lg font-semibold text-foreground mb-4">{previewItem.title}</h3>
+              {previewItem.type === 'video' ? (
+                <video src={previewItem.url} controls autoPlay className="w-full rounded-lg" />
+              ) : (
+                <img src={previewItem.url} alt={previewItem.title} className="w-full rounded-lg" />
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Debug Info */}
         <Card className="p-3 sm:p-4 bg-muted/50">
