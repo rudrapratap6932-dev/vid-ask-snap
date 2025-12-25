@@ -623,123 +623,106 @@ export default function KYCVerification() {
           </div>
         </Card>
 
-        {/* Split Screen Video Layout */}
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
-          {/* Agent Side (Left) */}
-          <Card className="overflow-hidden">
-            <div className="bg-primary/10 px-4 py-2 flex items-center gap-2">
-              <Headphones className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              <span className="font-semibold text-foreground text-sm sm:text-base">Live Support Agent</span>
-              {isAgentRecording && (
-                <div className="ml-auto flex items-center gap-1.5 bg-destructive/90 text-destructive-foreground px-2 py-0.5 rounded-full animate-pulse">
-                  <Circle className="h-2 w-2 fill-current" />
-                  <span className="text-xs font-medium">REC</span>
-                </div>
-              )}
-            </div>
-            <div className="relative">
-              {showAgentFlash && (
-                <div className="absolute inset-0 bg-snapshot-flash z-50 animate-pulse pointer-events-none" />
-              )}
-              
-              {/* Agent Countdown Overlay */}
-              {showAgentCountdown && (
-                <div className="absolute inset-0 bg-background/80 z-40 flex items-center justify-center">
-                  <div className="text-center space-y-2">
-                    <div className="text-5xl sm:text-7xl font-bold text-primary animate-pulse">
-                      {agentCountdownValue}
-                    </div>
-                    <p className="text-base sm:text-lg text-foreground font-medium">Get Ready!</p>
+        {/* Split Screen Video Layout - Side by Side */}
+        <Card className="overflow-hidden">
+          <div className="grid grid-cols-2 gap-0.5 bg-border">
+            {/* Agent Side (Left) */}
+            <div className="bg-background">
+              <div className="bg-primary/10 px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
+                <Headphones className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                <span className="font-semibold text-foreground text-xs sm:text-sm">Agent</span>
+                {isAgentRecording && (
+                  <div className="ml-auto flex items-center gap-1 bg-destructive/90 text-destructive-foreground px-1.5 py-0.5 rounded-full animate-pulse">
+                    <Circle className="h-1.5 w-1.5 fill-current" />
+                    <span className="text-[10px] font-medium hidden sm:inline">REC</span>
                   </div>
-                </div>
-              )}
-              
-              <div className="aspect-video bg-muted relative">
-                <video
-                  ref={agentVideoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                  style={{ transform: 'scaleX(-1)' }}
-                />
+                )}
               </div>
-              <canvas ref={agentCanvasRef} className="hidden" />
-            </div>
-            
-            {/* Agent Status - Recording indicator only */}
-            <div className="p-3 sm:p-4">
-              {isAgentRecording && (
-                <div className="flex items-center justify-center gap-2 text-destructive">
-                  <Circle className="h-3 w-3 fill-current animate-pulse" />
-                  <span className="text-sm font-medium">Recording Session...</span>
+              <div className="relative">
+                {showAgentFlash && (
+                  <div className="absolute inset-0 bg-snapshot-flash z-50 animate-pulse pointer-events-none" />
+                )}
+                
+                {showAgentCountdown && (
+                  <div className="absolute inset-0 bg-background/80 z-40 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-4xl sm:text-6xl font-bold text-primary animate-pulse">
+                        {agentCountdownValue}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="aspect-video bg-muted">
+                  <video
+                    ref={agentVideoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover"
+                    style={{ transform: 'scaleX(-1)' }}
+                  />
                 </div>
-              )}
+                <canvas ref={agentCanvasRef} className="hidden" />
+              </div>
             </div>
-          </Card>
 
-          {/* Client Side (Right) */}
-          <Card className="overflow-hidden">
-            <div className="bg-accent/10 px-4 py-2 flex items-center gap-2">
-              <User className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-              <span className="font-semibold text-foreground text-sm sm:text-base">Client Video</span>
-              {isClientRecording && (
-                <div className="ml-auto flex items-center gap-1.5 bg-destructive/90 text-destructive-foreground px-2 py-0.5 rounded-full animate-pulse">
-                  <Circle className="h-2 w-2 fill-current" />
-                  <span className="text-xs font-medium">REC</span>
-                </div>
-              )}
-            </div>
-            <div className="relative">
-              {showClientFlash && (
-                <div className="absolute inset-0 bg-snapshot-flash z-50 animate-pulse pointer-events-none" />
-              )}
-              
-              {/* Client Countdown Overlay */}
-              {showClientCountdown && (
-                <div className="absolute inset-0 bg-background/80 z-40 flex items-center justify-center">
-                  <div className="text-center space-y-2">
-                    <div className="text-5xl sm:text-7xl font-bold text-accent animate-pulse">
-                      {clientCountdownValue}
-                    </div>
-                    <p className="text-base sm:text-lg text-foreground font-medium">Get Ready!</p>
+            {/* Client Side (Right) */}
+            <div className="bg-background">
+              <div className="bg-accent/10 px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
+                <User className="h-3 w-3 sm:h-4 sm:w-4 text-accent" />
+                <span className="font-semibold text-foreground text-xs sm:text-sm">Client</span>
+                {isClientRecording && (
+                  <div className="ml-auto flex items-center gap-1 bg-destructive/90 text-destructive-foreground px-1.5 py-0.5 rounded-full animate-pulse">
+                    <Circle className="h-1.5 w-1.5 fill-current" />
+                    <span className="text-[10px] font-medium hidden sm:inline">REC</span>
                   </div>
-                </div>
-              )}
-              
-              <div className="aspect-video bg-muted relative">
-                <video
-                  ref={clientVideoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                  style={{ transform: 'scaleX(-1)' }}
-                />
+                )}
               </div>
-              <canvas ref={clientCanvasRef} className="hidden" />
-            </div>
-            
-            {/* Client Controls - Only Snapshot */}
-            <div className="p-3 sm:p-4 space-y-2">
-              <Button
-                onClick={() => startCountdown('client')}
-                variant="outline"
-                disabled={showClientCountdown}
-                className="w-full h-9 sm:h-10 text-xs sm:text-sm border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-              >
-                <Image className="mr-2 h-3 w-3" />
-                {showClientCountdown ? `Capturing in ${clientCountdownValue}...` : 'Capture Snapshot (5s)'}
-              </Button>
-              {isClientRecording && (
-                <div className="flex items-center justify-center gap-2 text-destructive">
-                  <Circle className="h-3 w-3 fill-current animate-pulse" />
-                  <span className="text-sm font-medium">Recording Session...</span>
+              <div className="relative">
+                {showClientFlash && (
+                  <div className="absolute inset-0 bg-snapshot-flash z-50 animate-pulse pointer-events-none" />
+                )}
+                
+                {showClientCountdown && (
+                  <div className="absolute inset-0 bg-background/80 z-40 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-4xl sm:text-6xl font-bold text-accent animate-pulse">
+                        {clientCountdownValue}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="aspect-video bg-muted">
+                  <video
+                    ref={clientVideoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover"
+                    style={{ transform: 'scaleX(-1)' }}
+                  />
                 </div>
-              )}
+                <canvas ref={clientCanvasRef} className="hidden" />
+              </div>
             </div>
-          </Card>
-        </div>
+          </div>
+          
+          {/* Controls Below Videos */}
+          <div className="p-3 sm:p-4 border-t border-border">
+            <Button
+              onClick={() => startCountdown('client')}
+              variant="outline"
+              disabled={showClientCountdown}
+              className="w-full h-9 sm:h-10 text-xs sm:text-sm border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Image className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              {showClientCountdown ? `Capturing in ${clientCountdownValue}...` : 'Capture Client Snapshot (5s)'}
+            </Button>
+          </div>
+        </Card>
+
 
         {/* Next Question Button */}
         <Button
