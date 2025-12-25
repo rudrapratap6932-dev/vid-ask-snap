@@ -149,36 +149,101 @@ export default function KYCVerification() {
 
   const startCamera = async () => {
     try {
-      // For demo, we use the same camera for both - in real scenario, agent would have separate stream
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { width: 1280, height: 720, facingMode: 'user' },
         audio: true
       });
       
       // Clone stream for both agent and client
-      setAgentStream(mediaStream);
-      setClientStream(mediaStream.clone());
+      const agentMediaStream = mediaStream;
+      const clientMediaStream = mediaStream.clone();
+      
+      setAgentStream(agentMediaStream);
+      setClientStream(clientMediaStream);
       
       if (agentVideoRef.current) {
-        agentVideoRef.current.srcObject = mediaStream;
+        agentVideoRef.current.srcObject = agentMediaStream;
         await agentVideoRef.current.play().catch(err => {
           console.error('Error playing agent video:', err);
         });
       }
 
       if (clientVideoRef.current) {
-        clientVideoRef.current.srcObject = mediaStream.clone();
+        clientVideoRef.current.srcObject = clientMediaStream;
         await clientVideoRef.current.play().catch(err => {
           console.error('Error playing client video:', err);
         });
       }
 
       setIsStarted(true);
-      toast.success('Cameras connected successfully');
+      setStartTime(new Date());
+      
+      // Auto-start recording for both after a short delay to ensure streams are ready
+      setTimeout(() => {
+        startSessionRecording(agentMediaStream, clientMediaStream);
+      }, 500);
+      
+      toast.success('Verification started - Recording in progress');
     } catch (error) {
       console.error('❌ Camera access error:', error);
       toast.error('Failed to access camera. Please grant camera permissions.');
     }
+  };
+
+  const startSessionRecording = (agentMediaStream: MediaStream, clientMediaStream: MediaStream) => {
+    // Start Agent Recording
+    const agentRecorder = new MediaRecorder(agentMediaStream, {
+      mimeType: 'video/webm;codecs=vp8,opus'
+    });
+    agentChunksRef.current = [];
+    agentRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        agentChunksRef.current.push(e.data);
+      }
+    };
+    agentRecorder.onstop = () => {
+      const blob = new Blob(agentChunksRef.current, { type: 'video/webm' });
+      const videoUrl = URL.createObjectURL(blob);
+      setQuestionClips(prev => [...prev, {
+        questionId: 0,
+        questionText: 'Full Session',
+        videoBlob: blob,
+        videoUrl: videoUrl,
+        source: 'agent'
+      }]);
+      console.log('📹 Agent full session recording saved');
+    };
+    agentRecorder.start();
+    setAgentMediaRecorder(agentRecorder);
+    setIsAgentRecording(true);
+
+    // Start Client Recording
+    const clientRecorder = new MediaRecorder(clientMediaStream, {
+      mimeType: 'video/webm;codecs=vp8,opus'
+    });
+    clientChunksRef.current = [];
+    clientRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        clientChunksRef.current.push(e.data);
+      }
+    };
+    clientRecorder.onstop = () => {
+      const blob = new Blob(clientChunksRef.current, { type: 'video/webm' });
+      const videoUrl = URL.createObjectURL(blob);
+      setQuestionClips(prev => [...prev, {
+        questionId: 0,
+        questionText: 'Full Session',
+        videoBlob: blob,
+        videoUrl: videoUrl,
+        source: 'client'
+      }]);
+      console.log('📹 Client full session recording saved');
+    };
+    clientRecorder.start();
+    setClientMediaRecorder(clientRecorder);
+    setIsClientRecording(true);
+
+    console.log('🔴 Session recording started for both Agent and Client');
   };
 
   const startRecording = useCallback((source: 'agent' | 'client') => {
@@ -537,42 +602,24 @@ export default function KYCVerification() {
           <Progress value={progress} className="h-1.5 sm:h-2" />
         </div>
 
-        {/* Question Display with Record Both Button */}
+        {/* Question Display */}
         <Card className="p-4 sm:p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="flex items-start gap-2 sm:gap-3 flex-1">
-              <div className="rounded-full bg-primary/10 p-1.5 sm:p-2 flex-shrink-0">
-                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              </div>
-              <div className="space-y-1 sm:space-y-2 flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground text-sm sm:text-base">Question {currentQuestionIndex + 1}</h3>
-                <p className="text-base sm:text-lg text-foreground leading-relaxed">
-                  {currentQuestion.text}
-                </p>
-              </div>
+          <div className="flex items-start gap-2 sm:gap-3">
+            <div className="rounded-full bg-primary/10 p-1.5 sm:p-2 flex-shrink-0">
+              <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            
-            {/* Record Both Button */}
-            <div className="flex-shrink-0">
-              {!(isAgentRecording && isClientRecording) ? (
-                <Button
-                  onClick={startBothRecordings}
-                  className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground h-10 sm:h-11 px-6 text-sm sm:text-base font-semibold"
-                >
-                  <Circle className="mr-2 h-4 w-4" />
-                  Record Both
-                </Button>
-              ) : (
-                <Button
-                  onClick={stopBothRecordings}
-                  variant="destructive"
-                  className="w-full sm:w-auto h-10 sm:h-11 px-6 text-sm sm:text-base font-semibold"
-                >
-                  <Circle className="mr-2 h-4 w-4 fill-current" />
-                  Stop Both
-                </Button>
-              )}
+            <div className="space-y-1 sm:space-y-2 flex-1 min-w-0">
+              <h3 className="font-semibold text-foreground text-sm sm:text-base">Question {currentQuestionIndex + 1}</h3>
+              <p className="text-base sm:text-lg text-foreground leading-relaxed">
+                {currentQuestion.text}
+              </p>
             </div>
+            {(isAgentRecording || isClientRecording) && (
+              <div className="flex items-center gap-1.5 bg-destructive/90 text-destructive-foreground px-2 py-1 rounded-full animate-pulse">
+                <Circle className="h-2 w-2 fill-current" />
+                <span className="text-xs font-medium">Session Recording</span>
+              </div>
+            )}
           </div>
         </Card>
 
@@ -620,35 +667,12 @@ export default function KYCVerification() {
               <canvas ref={agentCanvasRef} className="hidden" />
             </div>
             
-            {/* Agent Controls */}
-            <div className="p-3 sm:p-4 space-y-2">
-              {!isAgentRecording ? (
-                <Button
-                  onClick={() => startRecording('agent')}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-9 sm:h-10 text-xs sm:text-sm"
-                >
-                  <Circle className="mr-2 h-3 w-3" />
-                  Start Recording
-                </Button>
-              ) : (
-                <div className="space-y-2">
-                  <Button
-                    onClick={() => startCountdown('agent')}
-                    variant="outline"
-                    disabled={showAgentCountdown}
-                    className="w-full h-9 sm:h-10 text-xs sm:text-sm border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <Image className="mr-2 h-3 w-3" />
-                    {showAgentCountdown ? `Capturing in ${agentCountdownValue}...` : 'Capture Snapshot (5s)'}
-                  </Button>
-                  <Button
-                    onClick={() => stopRecording('agent')}
-                    variant="destructive"
-                    className="w-full h-9 sm:h-10 text-xs sm:text-sm"
-                  >
-                    <Circle className="mr-2 h-3 w-3 fill-current" />
-                    Stop Recording
-                  </Button>
+            {/* Agent Status - Recording indicator only */}
+            <div className="p-3 sm:p-4">
+              {isAgentRecording && (
+                <div className="flex items-center justify-center gap-2 text-destructive">
+                  <Circle className="h-3 w-3 fill-current animate-pulse" />
+                  <span className="text-sm font-medium">Recording Session...</span>
                 </div>
               )}
             </div>
@@ -696,35 +720,21 @@ export default function KYCVerification() {
               <canvas ref={clientCanvasRef} className="hidden" />
             </div>
             
-            {/* Client Controls */}
+            {/* Client Controls - Only Snapshot */}
             <div className="p-3 sm:p-4 space-y-2">
-              {!isClientRecording ? (
-                <Button
-                  onClick={() => startRecording('client')}
-                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-9 sm:h-10 text-xs sm:text-sm"
-                >
-                  <Circle className="mr-2 h-3 w-3" />
-                  Start Recording
-                </Button>
-              ) : (
-                <div className="space-y-2">
-                  <Button
-                    onClick={() => startCountdown('client')}
-                    variant="outline"
-                    disabled={showClientCountdown}
-                    className="w-full h-9 sm:h-10 text-xs sm:text-sm border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                  >
-                    <Image className="mr-2 h-3 w-3" />
-                    {showClientCountdown ? `Capturing in ${clientCountdownValue}...` : 'Capture Snapshot (5s)'}
-                  </Button>
-                  <Button
-                    onClick={() => stopRecording('client')}
-                    variant="destructive"
-                    className="w-full h-9 sm:h-10 text-xs sm:text-sm"
-                  >
-                    <Circle className="mr-2 h-3 w-3 fill-current" />
-                    Stop Recording
-                  </Button>
+              <Button
+                onClick={() => startCountdown('client')}
+                variant="outline"
+                disabled={showClientCountdown}
+                className="w-full h-9 sm:h-10 text-xs sm:text-sm border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                <Image className="mr-2 h-3 w-3" />
+                {showClientCountdown ? `Capturing in ${clientCountdownValue}...` : 'Capture Snapshot (5s)'}
+              </Button>
+              {isClientRecording && (
+                <div className="flex items-center justify-center gap-2 text-destructive">
+                  <Circle className="h-3 w-3 fill-current animate-pulse" />
+                  <span className="text-sm font-medium">Recording Session...</span>
                 </div>
               )}
             </div>
