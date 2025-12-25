@@ -243,6 +243,18 @@ export default function KYCVerification() {
     }
   }, [agentMediaRecorder, clientMediaRecorder]);
 
+  const startBothRecordings = useCallback(() => {
+    startRecording('agent');
+    startRecording('client');
+    toast.success('Recording started for both Agent and Client');
+  }, [startRecording]);
+
+  const stopBothRecordings = useCallback(() => {
+    stopRecording('agent');
+    stopRecording('client');
+    toast.info('Recording stopped for both Agent and Client');
+  }, [stopRecording]);
+
   const captureSnapshot = useCallback((source: 'agent' | 'client') => {
     const videoRef = source === 'agent' ? agentVideoRef : clientVideoRef;
     const canvasRef = source === 'agent' ? agentCanvasRef : clientCanvasRef;
@@ -525,17 +537,41 @@ export default function KYCVerification() {
           <Progress value={progress} className="h-1.5 sm:h-2" />
         </div>
 
-        {/* Question Display */}
+        {/* Question Display with Record Both Button */}
         <Card className="p-4 sm:p-5">
-          <div className="flex items-start gap-2 sm:gap-3">
-            <div className="rounded-full bg-primary/10 p-1.5 sm:p-2 flex-shrink-0">
-              <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-start gap-2 sm:gap-3 flex-1">
+              <div className="rounded-full bg-primary/10 p-1.5 sm:p-2 flex-shrink-0">
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              </div>
+              <div className="space-y-1 sm:space-y-2 flex-1 min-w-0">
+                <h3 className="font-semibold text-foreground text-sm sm:text-base">Question {currentQuestionIndex + 1}</h3>
+                <p className="text-base sm:text-lg text-foreground leading-relaxed">
+                  {currentQuestion.text}
+                </p>
+              </div>
             </div>
-            <div className="space-y-1 sm:space-y-2 flex-1 min-w-0">
-              <h3 className="font-semibold text-foreground text-sm sm:text-base">Question {currentQuestionIndex + 1}</h3>
-              <p className="text-base sm:text-lg text-foreground leading-relaxed">
-                {currentQuestion.text}
-              </p>
+            
+            {/* Record Both Button */}
+            <div className="flex-shrink-0">
+              {!(isAgentRecording && isClientRecording) ? (
+                <Button
+                  onClick={startBothRecordings}
+                  className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground h-10 sm:h-11 px-6 text-sm sm:text-base font-semibold"
+                >
+                  <Circle className="mr-2 h-4 w-4" />
+                  Record Both
+                </Button>
+              ) : (
+                <Button
+                  onClick={stopBothRecordings}
+                  variant="destructive"
+                  className="w-full sm:w-auto h-10 sm:h-11 px-6 text-sm sm:text-base font-semibold"
+                >
+                  <Circle className="mr-2 h-4 w-4 fill-current" />
+                  Stop Both
+                </Button>
+              )}
             </div>
           </div>
         </Card>
